@@ -1718,6 +1718,17 @@ PRODUCTS.forEach(normalizeProductImages);
 buildShowcase();
 renderProducts();
 updateBagCount();
+   function preloadImages(urls) {
+  return Promise.all(urls.map(src => {
+    return new Promise((resolve) => {
+      if (!src) { resolve(); return; }
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve(); // Continue even if image fails
+      img.src = src;
+    });
+  }));
+}
 </script>
 
 <script src="/backend-integration.js"></script>
