@@ -793,6 +793,146 @@ footer{
   .modal-head{padding:.85rem .9rem}
   .modal-body{padding:.8rem}
 }
+
+/* FINAL RESPONSIVE FIT */
+html,body{max-width:100%;overflow-x:hidden}
+body{min-width:0}
+nav{min-width:0}
+.logo{flex:0 0 auto}
+.nav-actions{flex:0 1 auto;min-width:0;justify-content:flex-end}
+.nav-actions .icon-btn{flex:0 0 auto}
+.hero,.process,.collection,.heritage,footer{width:100%;max-width:1400px}
+.hero-text,.hero-visual,.process-grid,.products,.philosophy-grid,.product-modal-grid,.foot-grid,
+.pm-main-wrap,.pm-info,.pm-image,.pm-gallery,.product-editor,.color-editor,.photo-slot{min-width:0}
+.hero-text h1,.hero-text p,.section-title,.section-sub,.card-body h3,.pm-info h2,.pm-info .desc,
+.order-details,.history-meta,.history-card,.product-editor{overflow-wrap:anywhere}
+.product-card{min-width:0}
+.modal{overscroll-behavior:contain}
+.modal-box,.modal-box.wide{width:min(900px,calc(100vw - 40px))}
+.modal-body{min-width:0}
+.form-group input,.form-group textarea,.form-group select{max-width:100%;min-width:0}
+@media (max-width:1200px){
+  nav{padding-left:3%;padding-right:3%}
+  .nav-links{gap:1.4rem}
+  .nav-actions{gap:.55rem}
+  .hero{padding-left:4%;padding-right:4%;gap:2.5rem}
+  .hero-visual{height:480px}
+  .showcase{transform:scale(.86)}
+  .process,.collection,.heritage{padding-left:4%;padding-right:4%}
+  .products{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.4rem}
+  .card-media{height:300px}
+  .foot-grid{gap:2rem}
+}
+@media (max-width:900px){
+  nav{padding:1rem 3%;gap:.75rem}
+  .nav-links{display:none}
+  .nav-actions{margin-left:auto}
+  .hero{grid-template-columns:1fr;text-align:center;padding:100px 4% 45px;gap:0}
+  .hero-text{width:100%;max-width:760px;margin:0 auto}
+  .hero-text p{margin-left:auto;margin-right:auto}
+  .hero-visual{width:100%;height:400px;margin-top:1rem;overflow:hidden}
+  .showcase{transform:scale(.72)}
+  .process,.collection,.heritage{padding:5rem 4%}
+  .process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+  .card-media{height:300px}
+  .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem}
+  .product-modal-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem}
+  .modal-box.wide{width:min(900px,calc(100vw - 24px))}
+}
+@media (max-width:600px){
+  nav{padding:.75rem 3%;gap:.4rem}
+  .logo{font-size:1.38rem;letter-spacing:2.2px}
+  .nav-actions{gap:.28rem}
+  .icon-btn{width:36px;height:36px}
+  .icon-btn svg{width:15px;height:15px}
+  .badge{top:-3px;right:-3px;min-width:15px;height:15px;font-size:.55rem;padding:0 3px}
+  .hero{padding:88px 4% 30px}
+  .hero-text h1{font-size:clamp(2.15rem,10.5vw,3.25rem)}
+  .hero-text p{font-size:.9rem;max-width:100%}
+  .hero-visual{height:285px;margin-top:.2rem}
+  .showcase{transform:scale(.48)}
+  .hero-glow{width:360px;height:360px}
+  .process,.collection,.heritage{padding:3.5rem 4%}
+  .process-grid{grid-template-columns:1fr;gap:.9rem}
+  .flip-card{height:205px}
+  .flip-face{padding:1.5rem}
+  .filters{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;width:100%;padding:0 0 .35rem;margin-bottom:1.5rem;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .filter-btn{flex:0 0 auto}
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+  .card-media{height:210px}
+  .card-body{padding:.85rem}
+  .card-body h3{font-size:1rem}
+  .card-body .cat{font-size:.63rem}
+  .card-foot{gap:.45rem}
+  .card-price{font-size:1.05rem}
+  .view-btn{padding:.4rem .62rem;font-size:.62rem;white-space:nowrap}
+  .philosophy-grid{grid-template-columns:1fr;gap:.9rem}
+  .phil-card{padding:1.7rem 1.25rem}
+  footer{padding:3rem 4% 1.5rem}
+  .foot-grid{grid-template-columns:1fr;gap:1.4rem}
+  .foot-bottom{flex-direction:column;align-items:flex-start}
+  .modal{padding:5px}
+  .modal-box,.modal-box.wide{width:100%;max-width:none;max-height:96vh;border-radius:15px}
+  .modal-head{padding:.9rem 1rem}
+  .modal-head h3{font-size:1.25rem}
+  .modal-body{padding:.9rem}
+  .product-modal-grid{grid-template-columns:1fr;gap:.9rem}
+  .pm-image{aspect-ratio:4/5}
+  .pm-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem}
+  .pm-info h2{font-size:1.5rem}
+  .pm-info .price{font-size:1.65rem}
+  .pm-info .desc{font-size:.85rem}
+  .size-row,.color-row{gap:.35rem}
+  .size-opt{min-width:38px;height:38px}
+  .color-opt{width:33px;height:33px}
+  .bag-item{grid-template-columns:54px minmax(0,1fr) auto;gap:.6rem;padding:.7rem}
+  .bag-item img{width:54px;height:54px}
+  .bag-item h5{font-size:.96rem}
+  .bag-item .meta{font-size:.64rem}
+  .bag-total .amount{font-size:1.4rem}
+  .order-summary .row{gap:.7rem;align-items:flex-start}
+  .order-summary .row strong,.order-summary .row span:last-child{overflow-wrap:anywhere;text-align:right}
+  .admin-tabs{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .admin-tabs::-webkit-scrollbar{display:none}
+  .admin-tab{flex:0 0 auto;padding:.65rem .8rem;font-size:.7rem}
+  .product-editor-grid{grid-template-columns:1fr}
+  .product-editor .full{grid-column:auto}
+  .color-editor-head{grid-template-columns:1fr}
+  .photo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem}
+  .photo-slot{padding:.35rem}
+  .photo-slot input[type=file]{font-size:.62rem;max-width:100%}
+}
+@media (max-width:380px){
+  nav{padding:.65rem 2.5%}
+  .logo{font-size:1.22rem;letter-spacing:1.7px}
+  .nav-actions{gap:.2rem}
+  .icon-btn{width:33px;height:33px}
+  .icon-btn svg{width:14px;height:14px}
+  .hero{padding-left:3%;padding-right:3%}
+  .hero-text h1{font-size:clamp(2rem,10.8vw,2.8rem)}
+  .hero-visual{height:250px}
+  .showcase{transform:scale(.40)}
+  .process,.collection,.heritage{padding-left:3%;padding-right:3%}
+  .products{gap:.6rem}
+  .card-media{height:175px}
+  .card-body{padding:.7rem}
+  .card-body h3{font-size:.92rem}
+  .card-price{font-size:.98rem}
+  .view-btn{padding:.36rem .52rem;font-size:.58rem}
+  .modal{padding:5px}
+  .modal-head{padding:.75rem .8rem}
+  .modal-body{padding:.75rem}
+  .pm-image{aspect-ratio:1/1.15}
+}
+@media (max-height:700px) and (max-width:600px){
+  .hero{padding-top:80px}
+  .hero-visual{height:235px}
+  .showcase{transform:scale(.38)}
+  .modal-box{max-height:94vh}
+}
+
 </style>
 </head>
 <body>
@@ -1793,6 +1933,7 @@ renderProducts();
 updateBagCount();
 </script>
 
+<script>if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) { document.addEventListener('DOMContentLoaded',()=>document.querySelectorAll('.product-card').forEach(c=>c.style.transform='')); }</script>
 <script src="/backend-integration.js"></script>
 </body>
 </html>
