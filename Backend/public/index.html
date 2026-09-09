@@ -378,7 +378,10 @@ nav{
 .card-body h3{font-size:1.3rem;margin-bottom:.3rem}
 .card-body .cat{font-size:.75rem;color:var(--ivory-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1rem}
 .card-foot{display:flex;justify-content:space-between;align-items:center}
-.card-price{font-family:var(--serif);font-size:1.4rem;color:var(--gold-bright);font-weight:600}
+.card-price-wrap{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap;min-width:0}
+.card-original-price{font-family:var(--serif);font-size:.98rem;color:var(--ivory-dim);text-decoration:line-through;text-decoration-thickness:2px;opacity:.82;white-space:nowrap}
+.card-price{font-family:var(--serif);font-size:1.4rem;color:var(--gold-bright);font-weight:700;white-space:nowrap}
+.price-off-badge{display:inline-flex;align-items:center;padding:.18rem .42rem;border-radius:999px;border:1px solid rgba(15,123,108,.45);background:rgba(15,123,108,.12);color:#6ff1df;font-size:.62rem;font-weight:700;letter-spacing:.7px;white-space:nowrap}
 .view-btn{
   padding:.5rem 1rem;border:1px solid var(--gold);border-radius:20px;
   font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);
@@ -503,7 +506,8 @@ footer{
 .pm-image:hover img{transform:rotateY(15deg) scale(1.05)}
 .pm-info h2{font-size:1.8rem;margin-bottom:.3rem}
 .pm-info .cat{color:var(--ivory-dim);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem}
-.pm-info .price{font-family:var(--serif);font-size:2rem;color:var(--gold-bright);margin-bottom:1.5rem}
+.pm-info .price{font-family:var(--serif);font-size:2rem;color:var(--gold-bright);margin-bottom:.25rem}
+.original-price{font-family:var(--serif);font-size:1.05rem;color:var(--ivory-dim);text-decoration:line-through;text-decoration-thickness:2px;opacity:.82;margin-bottom:1.2rem;display:block}
 .pm-info .desc{color:var(--ivory-dim);font-size:.9rem;margin-bottom:1.5rem}
 .opt-label{font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--ivory-dim);margin-bottom:.6rem;display:block}
 .size-row,.color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
@@ -707,6 +711,8 @@ footer{
   .foot-grid{grid-template-columns:1fr}
   .showcase{--showcase-scale:.65;}
   .modal-body{padding:1.2rem}
+  .pm-info .price{font-size:1.8rem}
+  .original-price{font-size:1rem}
 }
 
 
@@ -855,6 +861,19 @@ body{position:relative}
 }
 .btn-royal:hover::before{left:150%}
 .product-card,.phil-card,.flip-card{backface-visibility:hidden}
+
+@media(max-width:700px){
+  .card-price-wrap{gap:.35rem}
+  .card-original-price{font-size:.82rem}
+  .card-price{font-size:1.12rem}
+  .price-off-badge{font-size:.56rem;padding:.15rem .34rem}
+}
+@media(max-width:380px){
+  .card-price-wrap{gap:.28rem}
+  .card-original-price{font-size:.76rem}
+  .card-price{font-size:1rem}
+  .price-off-badge{font-size:.5rem}
+}
 
 @media (pointer:coarse){
   .cursor-system{display:none}
@@ -1382,6 +1401,7 @@ section,nav,footer,main,header,article,aside{min-width:0}
           <div class="cat" id="pmCat">Category</div>
           <h2 id="pmName">Name</h2>
           <div class="price" id="pmPrice">₹0</div>
+          <span class="original-price" id="pmOriginalPrice">₹0</span>
           <p class="desc" id="pmDesc">Description</p>
           <span class="opt-label">Size</span>
           <div class="size-row" id="sizeRow"></div>
@@ -1587,6 +1607,28 @@ let pendingCheckout = null;
 let editingProductId = null;
 let addingNewProduct = false;
 
+function getOriginalPriceOverride(productId){
+  try{
+    const overrides=JSON.parse(localStorage.getItem('primo_original_price_overrides')||'{}');
+    const value=Number(overrides[String(productId)]);
+    return Number.isFinite(value) && value>0 ? value : null;
+  }catch(e){ return null; }
+}
+function setOriginalPriceOverride(productId,value){
+  try{
+    const overrides=JSON.parse(localStorage.getItem('primo_original_price_overrides')||'{}');
+    overrides[String(productId)]=Number(value);
+    localStorage.setItem('primo_original_price_overrides',JSON.stringify(overrides));
+  }catch(e){}
+}
+function removeOriginalPriceOverride(productId){
+  try{
+    const overrides=JSON.parse(localStorage.getItem('primo_original_price_overrides')||'{}');
+    delete overrides[String(productId)];
+    localStorage.setItem('primo_original_price_overrides',JSON.stringify(overrides));
+  }catch(e){}
+}
+
 function normalizeProduct(p){
   const colors = Array.isArray(p.colors) ? p.colors.map(c=>({
     n:c.n || 'Color',
@@ -1596,6 +1638,7 @@ function normalizeProduct(p){
   colors.forEach(c=>{ if(!c.photos.length && p.img) c.photos=[p.img]; });
   return {
     id:Number(p.id), name:p.name||'Untitled Product', cat:p.cat||'Basics', price:Number(p.price)||0,
+    originalPrice:getOriginalPriceOverride(p.id) || (Number(p.originalPrice)>0 ? Number(p.originalPrice) : Math.ceil(((Number(p.price)||0)/0.70)/100)*100),
     img:p.img||'', desc:p.desc||'', sizes:Array.isArray(p.sizes)&&p.sizes.length?p.sizes:['S','M','L','XL'], colors
   };
 }
@@ -1696,7 +1739,11 @@ function renderProducts(filter='all'){
         <h3>${p.name}</h3>
         <div class="cat">${p.cat}</div>
         <div class="card-foot">
-          <span class="card-price">${fmt(p.price)}</span>
+          <div class="card-price-wrap">
+            <span class="card-original-price">${fmt(p.originalPrice)}</span>
+            <span class="card-price">${fmt(p.price)}</span>
+            ${p.originalPrice > p.price ? `<span class="price-off-badge">${Math.round((1 - p.price / p.originalPrice) * 100)}% OFF</span>` : ''}
+          </div>
           <button class="view-btn" onclick="openProduct(${p.id})">View</button>
         </div>
       </div>
@@ -1769,6 +1816,7 @@ function openProduct(id){
   $('pmCat').textContent = p.cat;
   $('pmName').textContent = p.name;
   $('pmPrice').textContent = fmt(p.price);
+  $('pmOriginalPrice').textContent = fmt(p.originalPrice);
   $('pmDesc').textContent = p.desc;
   $('qtyVal').textContent = 1;
 
@@ -2028,7 +2076,8 @@ function productEditorTemplate(p=null){
         <div class="form-group"><label>Product ID</label><input id="peId" type="number" min="1" value="${p?.id??''}" placeholder="Unique numeric ID"></div>
         <div class="form-group"><label>Product Name</label><input id="peName" value="${p?.name??''}" placeholder="Product name"></div>
         <div class="form-group"><label>Category</label><select id="peCat"><option ${p?.cat==='Basics'?'selected':''}>Basics</option><option ${p?.cat==='Outwear'?'selected':''}>Outwear</option><option ${p?.cat==='Knitwear'?'selected':''}>Knitwear</option><option ${p?.cat==='Denim'?'selected':''}>Denim</option><option ${p?.cat==='Tailoring'?'selected':''}>Tailoring</option></select></div>
-        <div class="form-group"><label>Price (₹)</label><input id="pePrice" type="number" min="0" value="${p?.price??''}" placeholder="24999"></div>
+        <div class="form-group"><label>Price (₹)</label><input id="pePrice" type="number" min="0" value="${p?.price??''}" placeholder="1299"></div>
+        <div class="form-group"><label>Original / Cut Price (₹)</label><input id="peOriginalPrice" type="number" min="0" value="${p?.originalPrice??''}" placeholder="1999"><small style="display:block;color:var(--ivory-dim);font-size:.68rem;margin-top:.35rem">Shown crossed out before the current price.</small></div>
         <div class="form-group full"><label>Description</label><textarea id="peDesc" placeholder="Product description">${p?.desc??''}</textarea></div>
         <div class="form-group full"><label>Sizes</label><input id="peSizes" value="${(p?.sizes||[]).join(', ')}" placeholder="S, M, L, XL"></div>
       </div>
@@ -2095,9 +2144,11 @@ async function saveProductFromEditor(){
   const name=$('peName').value.trim();
   const cat=$('peCat').value;
   const price=Number($('pePrice').value);
+  const originalPrice=Number($('peOriginalPrice').value);
   const desc=$('peDesc').value.trim();
   const sizes=$('peSizes').value.split(',').map(x=>x.trim()).filter(Boolean);
-  if(!id || !name || !cat || price<0 || !desc || !sizes.length){ toast('Fill all product information'); return; }
+  if(!id || !name || !cat || price<0 || originalPrice<=0 || !desc || !sizes.length){ toast('Fill all product information'); return; }
+  if(originalPrice < price){ toast('Original price should be equal to or higher than current price'); return; }
   const duplicate=PRODUCTS.find(p=>p.id===id && p.id!==editingProductId);
   if(duplicate){ toast('Product ID already exists'); return; }
   const colors=[];
@@ -2115,11 +2166,12 @@ async function saveProductFromEditor(){
   }catch(e){ toast('Could not read product photos'); return; }
   if(!colors.length){ toast('Add at least one color'); return; }
   const img=colors[0].photos[0] || (editingProductId ? PRODUCTS.find(p=>p.id===editingProductId)?.img : '') || '';
-  const product=normalizeProduct({id,name,cat,price,img,desc,sizes,colors});
+  const product=normalizeProduct({id,name,cat,price,originalPrice,img,desc,sizes,colors});
   const isNew=addingNewProduct || editingProductId===null;
   if(isNew) PRODUCTS.push(product);
   else { const idx=PRODUCTS.findIndex(p=>p.id===editingProductId); if(idx===-1){ toast('Product not found'); return; } PRODUCTS[idx]=product; }
   if(!saveProducts()) return;
+  setOriginalPriceOverride(id, originalPrice);
   editingProductId=null;
   addingNewProduct=false;
   buildShowcase();
@@ -2131,6 +2183,7 @@ function editProduct(id){ const p=PRODUCTS.find(x=>x.id===id); if(!p) return; ad
 function deleteProduct(id){
   if(!confirm('Delete this product?')) return;
   PRODUCTS=PRODUCTS.filter(p=>p.id!==id);
+  removeOriginalPriceOverride(id);
   saveProducts();
   buildShowcase();
   renderProducts(document.querySelector('.filter-btn.active')?.dataset.cat||'all');
@@ -2153,7 +2206,7 @@ function renderAdminProducts(){
           <div class="admin-product-body">
             <div><span class="product-id-pill">Product ID ${p.id}</span></div>
             <div style="font-family:var(--serif);font-size:1.05rem;margin-top:.15rem">${p.name}</div>
-            <div style="font-size:.75rem;color:var(--ivory-dim)">${p.cat} • ${fmt(p.price)}</div>
+            <div style="font-size:.75rem;color:var(--ivory-dim)">${p.cat} • <span style="text-decoration:line-through;opacity:.75">${fmt(p.originalPrice)}</span> <strong style="color:var(--gold-bright)">${fmt(p.price)}</strong></div>
             <div style="font-size:.72rem;color:var(--ivory-dim)">${p.colors.length} color${p.colors.length===1?'':'s'} • up to 3 photos/color</div>
             <div class="admin-product-actions"><button class="btn-sm btn-edit" onclick="editProduct(${p.id})">Edit</button><button class="btn-sm btn-reject" onclick="deleteProduct(${p.id})">Delete</button></div>
           </div>
