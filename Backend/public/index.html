@@ -222,17 +222,22 @@ nav{
 /* 3D Hero Showcase - Pentagon Carousel */
 .hero-visual{
   position:relative;height:520px;
-  perspective:1500px;
+  perspective:1600px;
   display:flex;align-items:center;justify-content:center;
+  overflow:visible;
 }
 .showcase{
   position:relative;width:320px;height:420px;
   transform-style:preserve-3d;
-  animation:heroSpin 25s linear infinite;
+  animation:heroSpin 22s linear infinite;
+  will-change:transform;
 }
-@keyframes heroSpin{to{transform:rotateY(360deg)}}
+@keyframes heroSpin{
+  from{transform:rotateY(0deg)}
+  to{transform:rotateY(360deg)}
+}
 .showcase-face{
-  position:absolute;inset:0;
+  position:absolute;top:0;left:0;width:320px;height:420px;
   border-radius:20px;overflow:hidden;
   border:1px solid var(--line);
   box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(212,175,55,.15);
@@ -240,6 +245,8 @@ nav{
   display:flex;flex-direction:column;justify-content:flex-end;
   padding:1.5rem;
   backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform-style:preserve-3d;
   transition:box-shadow .3s;
 }
 .showcase-face:hover{box-shadow:0 25px 70px rgba(0,0,0,.7),0 0 60px rgba(212,175,55,.3)}
@@ -253,11 +260,11 @@ nav{
 .showcase-face h3{font-size:1.4rem;color:var(--ivory);margin-bottom:.3rem}
 .showcase-face .price{color:var(--gold-bright);font-weight:600;letter-spacing:1px}
 
-.showcase-face:nth-child(1){transform:rotateY(0deg) translateZ(280px)}
-.showcase-face:nth-child(2){transform:rotateY(72deg) translateZ(280px)}
-.showcase-face:nth-child(3){transform:rotateY(144deg) translateZ(280px)}
-.showcase-face:nth-child(4){transform:rotateY(216deg) translateZ(280px)}
-.showcase-face:nth-child(5){transform:rotateY(288deg) translateZ(280px)}
+.showcase-face:nth-child(1){transform:rotateY(0deg) translateZ(300px)}
+.showcase-face:nth-child(2){transform:rotateY(72deg) translateZ(300px)}
+.showcase-face:nth-child(3){transform:rotateY(144deg) translateZ(300px)}
+.showcase-face:nth-child(4){transform:rotateY(216deg) translateZ(300px)}
+.showcase-face:nth-child(5){transform:rotateY(288deg) translateZ(300px)}
 
 .hero-glow{
   position:absolute;width:500px;height:500px;
@@ -691,13 +698,13 @@ footer{
   .hero{grid-template-columns:1fr;text-align:center;padding-top:100px}
   .hero-text p{margin-left:auto;margin-right:auto}
   .hero-visual{height:420px}
-  .showcase{transform:scale(.8)}
+  .showcase{scale:.8}
   .product-modal-grid{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr;gap:2rem}
 }
 @media(max-width:500px){
   .foot-grid{grid-template-columns:1fr}
-  .showcase{transform:scale(.65)}
+  .showcase{scale:.65}
   .modal-body{padding:1.2rem}
 }
 </style>
