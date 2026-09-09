@@ -1109,12 +1109,25 @@ function normalizeProduct(p){
     img:p.img||'', desc:p.desc||'', sizes:Array.isArray(p.sizes)&&p.sizes.length?p.sizes:['S','M','L','XL'], colors
   };
 }
+
+   function clearOldLocalData(){
+  localStorage.removeItem('lum_products');
+  localStorage.removeItem('lum_cart');
+  localStorage.removeItem('lum_orders');
+}
+
+clearOldLocalData();
+   
 function loadProducts(){
   try{
-    const saved=JSON.parse(localStorage.getItem('lum_products')||'null');
-    if(Array.isArray(saved) && saved.length) PRODUCTS=saved.map(normalizeProduct);
-    else PRODUCTS=PRODUCTS.map(normalizeProduct);
-  }catch(e){ PRODUCTS=PRODUCTS.map(normalizeProduct); }
+    // Remove old browser-saved products so the site always
+    // starts from the current product data.
+    localStorage.removeItem('lum_products');
+
+    PRODUCTS = PRODUCTS.map(normalizeProduct);
+  }catch(e){
+    PRODUCTS = PRODUCTS.map(normalizeProduct);
+  }
 }
 function saveProducts(){
   try{ localStorage.setItem('lum_products',JSON.stringify(PRODUCTS)); return true; }
