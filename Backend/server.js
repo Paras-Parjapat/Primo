@@ -204,6 +204,36 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: 'Server error' });
+
+  const fs = require('fs').promises;
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+
+// Add to package.json dependencies: "multer": "^1.4.5-lts.1", "uuid": "^9.0.0"
+
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadDir = path.join(__dirname, 'uploads');
+    await fs.mkdir(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop();
+    cb(null, `${uuidv4()}.${ext}`);
+  }
+});
+
+const upload = multer({ 
+  storage, 
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) cb(null, true);
+    else cb(new Error('Only images allowed'), false);
+  }
+});
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 });
 
 app.listen(PORT, () => console.log(`LUMIÈRE backend listening on ${PORT}`));
