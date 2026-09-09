@@ -682,7 +682,7 @@ footer{
 .btn-edit{border-color:var(--gold);color:var(--gold)}
 .btn-edit:hover{background:var(--gold);color:var(--bg-0);transform:translateY(-2px)}
 .product-id-pill{display:inline-flex;align-items:center;padding:.2rem .45rem;border-radius:5px;border:1px solid var(--line);font-size:.65rem;color:var(--ivory-dim);letter-spacing:1px}
-@media(max-width:700px){.product-editor-grid{grid-template-columns:1fr}.product-editor .full{grid-column:auto}.color-editor-head{grid-template-columns:1fr}.photo-grid{grid-template-columns:1fr 1fr 1fr}.history-item{align-items:flex-start;flex-direction:column}}
+@media(max-width:700px){.product-editor-grid{grid-template-columns:1fr}.product-editor .full{grid-column:auto}.color-editor-head{grid-template-columns:1fr}.photo-grid{grid-template-columns:1fr 1fr 1fr}.history-item{align-items:flex-start;flex-direction:column}.original-price-admin-field{grid-column:auto}}
 
 /* Toast */
 .toast{
@@ -694,6 +694,36 @@ footer{
   z-index:300;transition:transform .4s cubic-bezier(.2,.9,.3,1.2);
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Clear pricing presentation + admin discount controls */
+.original-price-admin-field{
+  position:relative;
+  padding:1rem;
+  border:1px solid rgba(212,175,55,.28);
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(212,175,55,.055),rgba(139,30,63,.045));
+}
+.original-price-admin-field label{color:var(--gold-bright)!important}
+.original-price-admin-field input{
+  border-color:rgba(212,175,55,.42)!important;
+  font-size:1.05rem!important;
+  font-weight:600;
+}
+.admin-price-help{display:block;color:var(--ivory-dim);font-size:.68rem;margin-top:.4rem;line-height:1.5}
+.admin-discount-preview{min-height:24px;margin-top:.55rem}
+.admin-discount-chip{
+  display:inline-flex;align-items:center;
+  padding:.32rem .6rem;border-radius:999px;
+  border:1px solid rgba(15,123,108,.5);
+  background:rgba(15,123,108,.12);
+  color:#6ff1df;font-size:.72rem;font-weight:700;letter-spacing:.3px;
+}
+.admin-discount-error{color:#ff6b8a;font-size:.72rem;font-weight:600}
+.admin-no-discount{color:var(--ivory-dim);font-size:.72rem}
+.admin-price-line{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;font-size:.8rem;color:var(--ivory-dim)}
+.admin-original-price{text-decoration:line-through;text-decoration-thickness:2px;opacity:.8}
+.admin-current-price{color:var(--gold-bright);font-size:.95rem}
+.admin-discount-mini{display:inline-flex;padding:.14rem .38rem;border-radius:999px;border:1px solid rgba(15,123,108,.45);background:rgba(15,123,108,.12);color:#6ff1df;font-size:.62rem;font-weight:700}
 
 /* ============================================
    11. RESPONSIVE
@@ -1629,6 +1659,13 @@ function removeOriginalPriceOverride(productId){
   }catch(e){}
 }
 
+function getDiscountPercent(originalPrice, currentPrice){
+  const original=Number(originalPrice);
+  const current=Number(currentPrice);
+  if(!Number.isFinite(original) || !Number.isFinite(current) || original<=0 || current<=0 || original<=current) return 0;
+  return Math.round(((original-current)/original)*100);
+}
+
 function normalizeProduct(p){
   const colors = Array.isArray(p.colors) ? p.colors.map(c=>({
     n:c.n || 'Color',
@@ -1638,7 +1675,7 @@ function normalizeProduct(p){
   colors.forEach(c=>{ if(!c.photos.length && p.img) c.photos=[p.img]; });
   return {
     id:Number(p.id), name:p.name||'Untitled Product', cat:p.cat||'Basics', price:Number(p.price)||0,
-    originalPrice:getOriginalPriceOverride(p.id) || (Number(p.originalPrice)>0 ? Number(p.originalPrice) : Math.ceil(((Number(p.price)||0)/0.70)/100)*100),
+    originalPrice:(Number(p.originalPrice)>0 ? Number(p.originalPrice) : null) || getOriginalPriceOverride(p.id) || Math.ceil(((Number(p.price)||0)/0.70)/100)*100,
     img:p.img||'', desc:p.desc||'', sizes:Array.isArray(p.sizes)&&p.sizes.length?p.sizes:['S','M','L','XL'], colors
   };
 }
@@ -1742,7 +1779,7 @@ function renderProducts(filter='all'){
           <div class="card-price-wrap">
             <span class="card-original-price">${fmt(p.originalPrice)}</span>
             <span class="card-price">${fmt(p.price)}</span>
-            ${p.originalPrice > p.price ? `<span class="price-off-badge">${Math.round((1 - p.price / p.originalPrice) * 100)}% OFF</span>` : ''}
+            ${getDiscountPercent(p.originalPrice,p.price) ? `<span class="price-off-badge">${getDiscountPercent(p.originalPrice,p.price)}% OFF</span>` : ''}
           </div>
           <button class="view-btn" onclick="openProduct(${p.id})">View</button>
         </div>
@@ -2076,8 +2113,13 @@ function productEditorTemplate(p=null){
         <div class="form-group"><label>Product ID</label><input id="peId" type="number" min="1" value="${p?.id??''}" placeholder="Unique numeric ID"></div>
         <div class="form-group"><label>Product Name</label><input id="peName" value="${p?.name??''}" placeholder="Product name"></div>
         <div class="form-group"><label>Category</label><select id="peCat"><option ${p?.cat==='Basics'?'selected':''}>Basics</option><option ${p?.cat==='Outwear'?'selected':''}>Outwear</option><option ${p?.cat==='Knitwear'?'selected':''}>Knitwear</option><option ${p?.cat==='Denim'?'selected':''}>Denim</option><option ${p?.cat==='Tailoring'?'selected':''}>Tailoring</option></select></div>
-        <div class="form-group"><label>Price (₹)</label><input id="pePrice" type="number" min="0" value="${p?.price??''}" placeholder="1299"></div>
-        <div class="form-group"><label>Original / Cut Price (₹)</label><input id="peOriginalPrice" type="number" min="0" value="${p?.originalPrice??''}" placeholder="1999"><small style="display:block;color:var(--ivory-dim);font-size:.68rem;margin-top:.35rem">Shown crossed out before the current price.</small></div>
+        <div class="form-group"><label>Present Price (₹)</label><input id="pePrice" type="number" min="0" step="1" value="${p?.price??''}" placeholder="1299" oninput="updateAdminDiscountPreview()"></div>
+        <div class="form-group original-price-admin-field">
+          <label>Original / Cut Price (₹)</label>
+          <input id="peOriginalPrice" type="number" min="0" step="1" value="${p?.originalPrice??''}" placeholder="1999" oninput="updateAdminDiscountPreview()">
+          <small class="admin-price-help">This is the price shown with a strikethrough before the present selling price.</small>
+          <div id="adminDiscountPreview" class="admin-discount-preview"></div>
+        </div>
         <div class="form-group full"><label>Description</label><textarea id="peDesc" placeholder="Product description">${p?.desc??''}</textarea></div>
         <div class="form-group full"><label>Sizes</label><input id="peSizes" value="${(p?.sizes||[]).join(', ')}" placeholder="S, M, L, XL"></div>
       </div>
@@ -2088,6 +2130,25 @@ function productEditorTemplate(p=null){
       </div>
     </div>`;
 }
+function updateAdminDiscountPreview(){
+  const original=Number($('peOriginalPrice')?.value);
+  const current=Number($('pePrice')?.value);
+  const box=$('adminDiscountPreview');
+  if(!box) return;
+  if(!original || !current){
+    box.innerHTML='';
+    return;
+  }
+  if(original < current){
+    box.innerHTML='<span class="admin-discount-error">Original price must be equal to or higher than the present price.</span>';
+    return;
+  }
+  const discount=getDiscountPercent(original,current);
+  box.innerHTML=discount>0
+    ? `<span class="admin-discount-chip">${fmt(original)} → ${fmt(current)} &nbsp; • &nbsp; ${discount}% OFF</span>`
+    : `<span class="admin-no-discount">No discount — original and present price are equal.</span>`;
+}
+
 function colorEditor(c,i){
   const photos=Array.isArray(c.photos)?c.photos.filter(Boolean).slice(0,3):[];
   return `<div class="color-editor" data-color-index="${i}">
@@ -2167,6 +2228,7 @@ async function saveProductFromEditor(){
   if(!colors.length){ toast('Add at least one color'); return; }
   const img=colors[0].photos[0] || (editingProductId ? PRODUCTS.find(p=>p.id===editingProductId)?.img : '') || '';
   const product=normalizeProduct({id,name,cat,price,originalPrice,img,desc,sizes,colors});
+  product.originalPrice=originalPrice;
   const isNew=addingNewProduct || editingProductId===null;
   if(isNew) PRODUCTS.push(product);
   else { const idx=PRODUCTS.findIndex(p=>p.id===editingProductId); if(idx===-1){ toast('Product not found'); return; } PRODUCTS[idx]=product; }
@@ -2195,6 +2257,7 @@ function renderAdminProducts(){
   if(editingProductId!==null || addingNewProduct){
     const p=editingProductId!==null ? PRODUCTS.find(x=>x.id===editingProductId) : null;
     wrap.innerHTML=productEditorTemplate(p);
+    updateAdminDiscountPreview();
     return;
   }
   wrap.innerHTML=`
@@ -2206,7 +2269,7 @@ function renderAdminProducts(){
           <div class="admin-product-body">
             <div><span class="product-id-pill">Product ID ${p.id}</span></div>
             <div style="font-family:var(--serif);font-size:1.05rem;margin-top:.15rem">${p.name}</div>
-            <div style="font-size:.75rem;color:var(--ivory-dim)">${p.cat} • <span style="text-decoration:line-through;opacity:.75">${fmt(p.originalPrice)}</span> <strong style="color:var(--gold-bright)">${fmt(p.price)}</strong></div>
+            <div class="admin-price-line"><span class="admin-original-price">${fmt(p.originalPrice)}</span> <strong class="admin-current-price">${fmt(p.price)}</strong> ${getDiscountPercent(p.originalPrice,p.price)?`<span class="admin-discount-mini">${getDiscountPercent(p.originalPrice,p.price)}% OFF</span>`:''}</div>
             <div style="font-size:.72rem;color:var(--ivory-dim)">${p.colors.length} color${p.colors.length===1?'':'s'} • up to 3 photos/color</div>
             <div class="admin-product-actions"><button class="btn-sm btn-edit" onclick="editProduct(${p.id})">Edit</button><button class="btn-sm btn-reject" onclick="deleteProduct(${p.id})">Delete</button></div>
           </div>
