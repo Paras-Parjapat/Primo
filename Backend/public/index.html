@@ -1185,11 +1185,21 @@ function closeModal(id){ $(id).classList.remove('active'); document.body.style.o
 /* ============================================
    HERO — 3D SHOWCASE
    ============================================ */
-function buildShowcase(){
+async function buildShowcase(){
   const showcase = $('showcase');
-  showcase.innerHTML = PRODUCTS.slice(0,5).map(p => `
+  const products = PRODUCTS.slice(0,5);
+  const imageUrls = products.map(p => p.img).filter(Boolean);
+  
+  // Show loading state
+  showcase.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--gold);font-family:var(--serif);font-size:1.2rem">Loading collection...</div>';
+  
+  // Preload all images first
+  await preloadImages(imageUrls);
+  
+  // Now render the carousel
+  showcase.innerHTML = products.map(p => `
     <div class="showcase-face">
-      <img src="${p.img}" alt="${p.name}">
+      <img src="${p.img}" alt="${p.name}" loading="eager">
       <div class="info">
         <h3>${p.name}</h3>
         <span class="price">${fmt(p.price)}</span>
