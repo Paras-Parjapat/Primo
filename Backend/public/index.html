@@ -1399,6 +1399,7 @@ section,nav,footer,main,header,article,aside{min-width:0}
       <h5>Support</h5>
       <a href="#" onclick="openModal('trackModal');return false">Track an Order</a>
       <a href="#" onclick="openModal('adminLoginModal');return false">Admin Access</a>
+      <a href="#" onclick="openModal('termsModal');return false">Terms & Conditions</a>
     </div>
     <div class="foot-col">
       <h5>Payment</h5>
@@ -1419,6 +1420,26 @@ section,nav,footer,main,header,article,aside{min-width:0}
 <!-- ============================================
      MODALS
      ============================================ -->
+
+<!-- Terms & Conditions -->
+<div class="modal" id="termsModal">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h3>Terms & Conditions</h3>
+      <button class="close-btn" onclick="closeModal('termsModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <ol style="padding-left:1.35rem;color:var(--ivory-dim);line-height:1.85">
+        <li>Fill in the correct and complete address so your order can be shipped to the correct location.</li>
+        <li>If the exact product amount is not paid, only 95% of the amount received will be refunded.</li>
+        <li>Each product will be shipped within 3 to 7 days.</li>
+        <li>Our products are made with premium quality as our priority.</li>
+        <li>We do not make fake promises or give false hopes about product quality.</li>
+        <li>Build trust with Primo — our focus is premium quality and premium style.</li>
+      </ol>
+    </div>
+  </div>
+</div>
 
 <!-- Product View -->
 <div class="modal" id="productModal">
@@ -1503,7 +1524,21 @@ section,nav,footer,main,header,article,aside{min-width:0}
         <p class="opt-label" style="margin-bottom:1rem">Scan with any UPI app</p>
         <div class="qr-box">
           <img src="/qr-code.jpeg" alt="Primo UPI QR Code">
-
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" fill="white"/>
+            <g fill="black">
+              <rect x="20" y="20" width="50" height="50"/><rect x="25" y="25" width="40" height="40" fill="white"/><rect x="30" y="30" width="30" height="30"/>
+              <rect x="130" y="20" width="50" height="50"/><rect x="135" y="25" width="40" height="40" fill="white"/><rect x="140" y="30" width="30" height="30"/>
+              <rect x="20" y="130" width="50" height="50"/><rect x="25" y="135" width="40" height="40" fill="white"/><rect x="30" y="140" width="30" height="30"/>
+              <rect x="80" y="20" width="10" height="10"/><rect x="100" y="20" width="10" height="10"/><rect x="80" y="40" width="10" height="10"/>
+              <rect x="80" y="80" width="10" height="10"/><rect x="100" y="80" width="10" height="10"/><rect x="120" y="80" width="10" height="10"/>
+              <rect x="80" y="100" width="10" height="10"/><rect x="110" y="100" width="10" height="10"/><rect x="140" y="100" width="10" height="10"/>
+              <rect x="80" y="120" width="10" height="10"/><rect x="100" y="120" width="10" height="10"/><rect x="130" y="120" width="10" height="10"/>
+              <rect x="80" y="140" width="10" height="10"/><rect x="110" y="140" width="10" height="10"/><rect x="150" y="140" width="10" height="10"/>
+              <rect x="80" y="160" width="10" height="10"/><rect x="100" y="160" width="10" height="10"/><rect x="130" y="160" width="10" height="10"/>
+              <rect x="160" y="160" width="20" height="20"/>
+            </g>
+          </svg>
         </div>
         <p class="qr-note">After paying, tap the button below to confirm.</p>
         <div class="payment-warning">Please pay the exact amount shown above. If the payment amount is low, wrong, or not exactly equal to the product/order amount, only 95% of the amount received may be refunded.</div>
@@ -1622,7 +1657,16 @@ let PRODUCTS = [
 /* ============================================
    STATE
    ============================================ */
-let cart = JSON.parse(localStorage.getItem('lum_cart') || '[]').map(i=>({...i,productId:i.productId ?? i.id}));
+const PRIMO_DEVICE_KEY = 'primo_device_id';
+let PRIMO_DEVICE_ID = localStorage.getItem(PRIMO_DEVICE_KEY);
+if(!PRIMO_DEVICE_ID){
+  PRIMO_DEVICE_ID = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : 'device-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+  localStorage.setItem(PRIMO_DEVICE_KEY, PRIMO_DEVICE_ID);
+}
+const PRIMO_CART_KEY = 'primo_cart_' + PRIMO_DEVICE_ID;
+let cart = JSON.parse(localStorage.getItem(PRIMO_CART_KEY) || '[]').map(i=>({...i,productId:i.productId ?? i.id}));
 let orders = JSON.parse(localStorage.getItem('lum_orders') || '[]');
 let currentProduct = null;
 let currentSize = null;
@@ -1682,6 +1726,7 @@ function normalizeProduct(p){
 }
 
 clearOldLocalData();
+try{ localStorage.removeItem('lum_cart'); }catch(e){}
    
 function loadProducts(){
   try{
@@ -1727,7 +1772,7 @@ function getProductPhotos(p,colorName){
    ============================================ */
 const $ = id => document.getElementById(id);
 const fmt = n => '₹' + n.toLocaleString('en-IN');
-const saveCart = () => localStorage.setItem('lum_cart', JSON.stringify(cart));
+const saveCart = () => localStorage.setItem(PRIMO_CART_KEY, JSON.stringify(cart));
 const saveOrders = () => localStorage.setItem('lum_orders', JSON.stringify(orders));
 const genOrderId = () => 'LUM-' + Math.random().toString(36).substring(2,8).toUpperCase();
 
