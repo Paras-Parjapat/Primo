@@ -437,13 +437,13 @@ footer{
 }
 .foot-grid{
   max-width:1300px;margin:0 auto;
-  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;gap:3rem;
 }
 .foot-col h5{
   font-family:var(--serif);font-size:1.1rem;color:var(--gold);
   margin-bottom:1rem;letter-spacing:1px;
 }
-.foot-col p,.foot-col a{color:var(--ivory-dim);font-size:.9rem;display:block;margin-bottom:.5rem;transition:color .3s}
+.foot-col p,.foot-col a{color:var(--ivory-dim);font-size:.9rem;display:block;margin-bottom:.5rem;transition:color .3s;overflow-wrap:anywhere}
 .foot-col a:hover{color:var(--gold)}
 .foot-bottom{
   max-width:1300px;margin:3rem auto 0;padding-top:2rem;
@@ -589,6 +589,9 @@ footer{
 .qr-box svg{width:200px;height:200px;display:block}
 .qr-box img{width:200px;height:200px;display:block;object-fit:contain}
 .qr-note{color:var(--ivory-dim);font-size:.85rem;margin-bottom:1rem}
+.payment-warning{margin:0 auto 1rem;max-width:520px;padding:.75rem .9rem;border:1px solid rgba(212,175,55,.35);border-radius:10px;background:rgba(212,175,55,.06);color:var(--ivory-dim);font-size:.76rem;line-height:1.55;text-align:left}
+.address-note{display:block;margin-top:.45rem;color:var(--ivory-dim);font-size:.72rem;line-height:1.5}
+.shipping-note{margin:-.6rem 0 1.25rem;color:var(--gold-bright);font-size:.78rem;font-weight:600;letter-spacing:.35px}
 .order-summary{
   background:var(--bg-2);border-radius:10px;padding:1rem;
   border:1px solid var(--line);margin-bottom:1.5rem;text-align:left;
@@ -1300,6 +1303,23 @@ section,nav,footer,main,header,article,aside{min-width:0}
 </section>
 
 <!-- ============================================
+     COLLECTION
+     ============================================ -->
+<section class="collection" id="collection">
+  <h2 class="section-title">Curated for You</h2>
+  <p class="section-sub">Exclusive masterpieces. Click any piece to view details, choose size, color and quantity.</p>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="Basics">Basics</button>
+    <button class="filter-btn" data-cat="Outwear">Outwear</button>
+    <button class="filter-btn" data-cat="Knitwear">Knitwear</button>
+    <button class="filter-btn" data-cat="Denim">Denim</button>
+    <button class="filter-btn" data-cat="Tailoring">Tailoring</button>
+  </div>
+  <div class="products" id="products"></div>
+</section>
+
+<!-- ============================================
      PROCESS / FEATURES (3D FLIP CARDS)
      ============================================ -->
 <section class="process">
@@ -1331,23 +1351,6 @@ section,nav,footer,main,header,article,aside{min-width:0}
       </div>
     </div>
   </div>
-</section>
-
-<!-- ============================================
-     COLLECTION
-     ============================================ -->
-<section class="collection" id="collection">
-  <h2 class="section-title">Curated for You</h2>
-  <p class="section-sub">Exclusive masterpieces. Click any piece to view details, choose size, color and quantity.</p>
-  <div class="filters" id="filters">
-    <button class="filter-btn active" data-cat="all">All</button>
-    <button class="filter-btn" data-cat="Basics">Basics</button>
-    <button class="filter-btn" data-cat="Outwear">Outwear</button>
-    <button class="filter-btn" data-cat="Knitwear">Knitwear</button>
-    <button class="filter-btn" data-cat="Denim">Denim</button>
-    <button class="filter-btn" data-cat="Tailoring">Tailoring</button>
-  </div>
-  <div class="products" id="products"></div>
 </section>
 
 <!-- ============================================
@@ -1401,6 +1404,11 @@ section,nav,footer,main,header,article,aside{min-width:0}
       <h5>Payment</h5>
       <p>UPI QR is configured in the source. Replace the placeholder with your own QR code.</p>
     </div>
+    <div class="foot-col">
+      <h5>Contact Us</h5>
+      <p>For inquiries, contact us at:</p>
+      <a href="mailto:primopremium03@gmail.com">primopremium03@gmail.com</a>
+    </div>
   </div>
   <div class="foot-bottom">
     <span>© 2026 Primo India — Crafted with Elegance.</span>
@@ -1433,6 +1441,7 @@ section,nav,footer,main,header,article,aside{min-width:0}
           <div class="price" id="pmPrice">₹0</div>
           <span class="original-price" id="pmOriginalPrice">₹0</span>
           <p class="desc" id="pmDesc">Description</p>
+          <div class="shipping-note">Product will be shipped in 3 to 7 days.</div>
           <span class="opt-label">Size</span>
           <div class="size-row" id="sizeRow"></div>
           <span class="opt-label">Color</span>
@@ -1475,7 +1484,7 @@ section,nav,footer,main,header,article,aside{min-width:0}
       <div class="form-group"><label>Full Name</label><input type="text" id="cName" placeholder="Your full name"></div>
       <div class="form-group"><label>UPI Account Name</label><input type="text" id="cAcc" placeholder="Name on UPI account"></div>
       <div class="form-group"><label>Phone Number</label><input type="tel" id="cPhone" placeholder="+91 XXXXX XXXXX"></div>
-      <div class="form-group"><label>Full Address</label><textarea id="cAddr" placeholder="House no, street, city, state, PIN"></textarea></div>
+      <div class="form-group"><label>Full Address</label><textarea id="cAddr" placeholder="House no, street, city, state, PIN"></textarea><small class="address-note">Please enter your complete and correct address. A wrong or incomplete address can cause problems with shipping or delivery.</small></div>
       <button class="btn-royal" onclick="proceedToPayment()" style="width:100%;justify-content:center;margin-top:.5rem">Proceed to Payment</button>
     </div>
   </div>
@@ -1511,6 +1520,7 @@ section,nav,footer,main,header,article,aside{min-width:0}
           </svg>
         </div>
         <p class="qr-note">After paying, tap the button below to confirm.</p>
+        <div class="payment-warning">Please pay the exact amount shown above. If the payment amount is low, wrong, or not exactly equal to the product/order amount, only 95% of the amount received may be refunded.</div>
       </div>
       <button class="btn-royal" onclick="confirmPayment()" style="width:100%;justify-content:center">I Have Paid</button>
     </div>
@@ -1563,7 +1573,6 @@ section,nav,footer,main,header,article,aside{min-width:0}
     <div class="modal-body">
       <p style="color:var(--ivory-dim);margin-bottom:1rem;font-size:.9rem">Enter the same 10-digit phone number used at checkout to view previous orders.</p>
       <div class="form-group"><label>Phone Number</label><input type="tel" id="historyPhone" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"></div>
-      <div class="form-group"><label>Search Order ID / Product ID</label><input type="text" id="historySearch" placeholder="e.g. LUM-ABC123 or 1"></div>
       <button class="btn-royal" onclick="loadOrderHistory()" style="width:100%;justify-content:center">View My Orders</button>
       <div id="historyResult" style="margin-top:1.5rem"></div>
     </div>
@@ -2004,11 +2013,7 @@ function loadOrderHistory(){
   const phone=$('historyPhone').value.replace(/\D/g,'');
   const res=$('historyResult');
   if(!/^[6-9]\d{9}$/.test(phone)){ toast('Enter a valid 10-digit phone number'); return; }
-  const query=String($('historySearch')?.value||'').trim().toUpperCase();
-  let matches=orders.filter(o=>String(o.customer?.phone||'').replace(/\D/g,'')===phone);
-  if(query){
-    matches=matches.filter(o=>o.id.toUpperCase()===query || o.items.some(i=>String(i.productId ?? i.id).trim()===query));
-  }
+  const matches=orders.filter(o=>String(o.customer?.phone||'').replace(/\D/g,'')===phone);
   if(!matches.length){
     res.innerHTML='<div class="empty-state" style="background:var(--bg-2);padding:1.5rem;border-radius:10px;border:1px solid var(--line)">No previous orders found for this phone number.</div>';
     return;
@@ -2302,7 +2307,7 @@ document.querySelectorAll('.admin-tab').forEach(t=>{
    EVENT BINDINGS
    ============================================ */
 $('bagBtn').addEventListener('click', ()=>{ renderBag(); openModal('bagModal'); });
-$('historyBtn').addEventListener('click', ()=>{ $('historyResult').innerHTML=''; $('historyPhone').value=''; $('historySearch').value=''; openModal('historyModal'); });
+$('historyBtn').addEventListener('click', ()=>{ $('historyResult').innerHTML=''; $('historyPhone').value=''; openModal('historyModal'); });
 $('adminBtn').addEventListener('click', ()=>openModal('adminLoginModal'));
 $('trackBtn').addEventListener('click', ()=>{ $('trackResult').innerHTML=''; $('trackInput').value=''; openModal('trackModal'); });
 document.querySelectorAll('.modal').forEach(m=>{
